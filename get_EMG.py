@@ -16,7 +16,6 @@ import pypaths.pypaths as pypaths
 from scipy.signal import butter, filtfilt
 from tkinter import filedialog
 import json
-import sys
 
 #%% Housekeeping
 #%matplotlib qt
@@ -25,12 +24,8 @@ pp = pypaths.Pypath() # initialize my class
 
 #%% CLI functionality
 # get path of file
-#path = '' # input('input path or return') or r'C:\Users\Dell\Documents\BYB\BYB_Recording_2018-07-06_13.05.15.wav'
-#while (path[-1*len('-analysis.txt'):] != '-analysis.txt'):
-if sys.platform == 'linux':
-    path = filedialog.askopenfilename(title='', initialdir='/mnt/A4E80E13E80DE480/Users/Dell/Documents/BYB/') # , initialdir=path)
-else:
-    path = filedialog.askopenfilename(title='') # , initialdir=path)
+path = filedialog.askopenfilename(title='')
+
 path = pp.to_native(path)
 wav_file = read(path)
 
