@@ -119,15 +119,15 @@ def pretty_up(axis, title='', y_axis = ''):
 #pretty_up(ax3, title='', y_axis='spikes')
 
 ##
-ax = sns.boxplot(x='organism', y='cc', width=0.4, data=ns_cc_df)
-ax = sns.swarmplot(x='organism', y='cc', data=ns_cc_df, color='.02')
-ax.set_title('burst durations (ms)')
-pretty_up(ax, title='', y_axis='ms')
-
-ax1 = sns.boxplot(x='organism', y='ns', width=0.4, data=ns_cc_df)
-ax1 = sns.swarmplot(x='organism', y='ns', color="0.2", data=ns_cc_df)
-ax1.set_title('Number of spikes per burst')
-pretty_up(ax1, title='', y_axis='spikes')
+#ax = sns.boxplot(x='organism', y='cc', width=0.4, data=ns_cc_df)
+#ax = sns.swarmplot(x='organism', y='cc', data=ns_cc_df, color='.02')
+#ax.set_title('burst durations (ms)')
+#pretty_up(ax, title='', y_axis='ms')
+#
+#ax1 = sns.boxplot(x='organism', y='ns', width=0.4, data=ns_cc_df)
+#ax1 = sns.swarmplot(x='organism', y='ns', color="0.2", data=ns_cc_df)
+#ax1.set_title('Number of spikes per burst')
+#pretty_up(ax1, title='', y_axis='spikes')
 
 #ax2 = sns.boxplot(x='organism', y='ih', width=0.4, data=ih_df)
 #ax2 = sns.swarmplot(x='organism', y='ih', color="0.2", data=ih_df)
@@ -206,8 +206,13 @@ meta_df = pd.concat([meta_df, pd.DataFrame(
          'Extensor spikes':asl(us6, ss6)})])
 
 # Make plots
-sns.pointplot( x='Individual', y='Duration', join=False, sharex=True, data=meta_df)
-sns.pointplot( x='Individual', y='Extensor spikes', join=False, sharex=True, data=meta_df)
+ax23 = sns.pointplot( x='Individual', y='Duration', hue='Species', join=False, sharex=True, data=meta_df)
+ax23.set(xticklabels=[])
+ax23.set(title='Cocontraction durations between species')
+ax24 = sns.pointplot( x='Individual', y='Extensor spikes', hue='Species', join=False, sharex=True, data=meta_df)
+ax24.set(xticklabels=[])
+ax24.set(title='Number of spikes')
+
 #meta_df  =pd.DataFrame({
 #        'xbar': [370, 243, 375, 383,
 #                 248, 376],
@@ -217,7 +222,7 @@ sns.pointplot( x='Individual', y='Extensor spikes', join=False, sharex=True, dat
 #everything wil be good
 
 
-# lineplot
+## lineplot ACROSS TAXA
 ax6 = sns.catplot(x='period', y='numsp', hue='ind', kind='point',
                   col='organism', capsize=0.1, data=if_df)
 pretty_up(ax6, title='', y_axis='Number of spikes')
