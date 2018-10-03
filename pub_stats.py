@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style='darkgrid')
 
-xlfile = pd.ExcelFile(r"C:\Users\Dell\Documents\BYB\dataannotations.xlsx")
+xlfile = pd.ExcelFile(r"E:\BYB\dataannotations.xlsx")
 dfs = pd.read_excel(xlfile, sheet_name="Sheet1")
 # note: dfs.loc[dfs['notes']=='underwater', ['title']]
 # returns df containing only rows of the title column for which the notes column reads
@@ -27,7 +27,10 @@ def run_analysis_df(organism='cockroach'):
     files = dfs.loc[(dfs['organism']==organism) & ~dfs['include'].isnull(), ['title', 'include']].values.tolist()
 #    print(files)
     for metainfo in files:
+        # need to chop and screw this piece so it reads the right piece
+        
         path = metainfo[0][:-1 * len('.wav')] + '-analysis.json'
+        path = 'E:\\BYB\\' + path.split('\\')[-1]
         # casting as string bc sometimes it is interpreted as an int.
         trials = str(metainfo[1]).split() # returns list of POSITIONS of relevant trials. decrement for index
         jsondata = json.load(open(path, 'r'))
@@ -82,24 +85,31 @@ if_df = pd.concat([if_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'period': '
                                         'numsp':ih, 'ind':list(range(len(ih)))})])
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'period': 'second half',
                                         'numsp':fh, 'ind':list(range(len(ih)))})])
+# So it only plots all points in pointplot if we say hue=ind. But if ind is the same range 
+# for all things, then it things all points are the same color. They shouldn't 
+# be the same color, so we need to change ind.
+# this is an annoying workaround so that the ind variables are different for each damn organism so the hues look different.
 
+ms_ih = len(ih)
+    
 (hd, ns, cc, gpd, ih, fh) = run_analysis_df('cricket')
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'cricket', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'cricket', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'cricket', 'gpd':gpd})])
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cricket', 'period': 'first half',
-                                        'numsp':ih, 'ind':list(range(len(ih)))})])
+                                        'numsp':ih, 'ind':list(range(ms_ih, len(ih)+ms_ih))})])
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cricket', 'period': 'second half',
-                                        'numsp':fh, 'ind':list(range(len(ih)))})])
-
+                                        'numsp':fh, 'ind':list(range(ms_ih, len(ih)+ms_ih))})])
+cricket_ih = len(ih) + ms_ih
+    
 (hd, ns, cc, gpd, ih, fh) = run_analysis_df('cockroach')
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'cockroach', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'cockroach', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'cockroach', 'gpd':gpd})])
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cockroach', 'period': 'first half',
-                                        'numsp':ih, 'ind':list(range(len(ih)))})])
+                                        'numsp':ih, 'ind':list(range(cricket_ih, len(ih)+cricket_ih))})])
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cockroach', 'period': 'second half',
-                                        'numsp':fh, 'ind':list(range(len(ih)))})])
+                                        'numsp':fh, 'ind':list(range(cricket_ih, len(ih)+cricket_ih))})])
 
 def pretty_up(axis, title='', y_axis = ''):
     axis.spines['left'].set_visible(False) # remove frame...
@@ -206,9 +216,12 @@ meta_df = pd.concat([meta_df, pd.DataFrame(
          'Extensor spikes':asl(us6, ss6)})])
 
 # Make plots
-ax23 = sns.pointplot( x='Individual', y='Duration', hue='Species', join=False, sharex=True, data=meta_df)
+plt.figure()
+ax23 = sns.pointplot( x='Individual', y='Duration', hue='Species', join=False, sharex=True, data=meta_df, legend=False)
 ax23.set(xticklabels=[])
+ax23.legend_.remove()
 ax23.set(title='Cocontraction durations between species')
+plt.figure()
 ax24 = sns.pointplot( x='Individual', y='Extensor spikes', hue='Species', join=False, sharex=True, data=meta_df)
 ax24.set(xticklabels=[])
 ax24.set(title='Number of spikes')
@@ -223,9 +236,9 @@ ax24.set(title='Number of spikes')
 
 
 ## lineplot ACROSS TAXA
-ax6 = sns.catplot(x='period', y='numsp', hue='ind', kind='point',
-                  col='organism', capsize=0.1, data=if_df)
-pretty_up(ax6, title='', y_axis='Number of spikes')
+ax6 = sns.catplot(x='period', y='numsp', hue='ind',
+                  kind='point', col='organism', capsize=0.1, data=if_df, legend=False)
+#pretty_up(ax6, title='', y_axis='Number of spikes')
 
 
 
