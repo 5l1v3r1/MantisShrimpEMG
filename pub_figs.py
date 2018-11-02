@@ -13,6 +13,8 @@ from scipy.signal import butter, filtfilt
 
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
+#%%
+#(mantis shrimp data from 11.38.47, cricket from 13.38.41, cockroach from 17.03.52)
 #%% Housekeeping
 #%matplotlib qt
 plt.clf() # clear current fig
@@ -74,15 +76,15 @@ def pretty_up(interval=0.001):
 # i.e., number of x_regions
 for i in range(len(json_data['spikes'])):
 #
-#    x1 = x_regions[i][0]
-#    x2 = x_regions[i][1]
-#
-#    #%% First, waveforms
-#    plt.figure()
-#    curr_spikes = np.array(json_data['spikes'][i][0])
-#    curr_spikes = curr_spikes[~np.isnan(curr_spikes).any(axis=1)] # removing any rows with nans in them
-#    WINDOW_SIZE = np.shape(curr_spikes)[1]
-#    numel_spikes = len(curr_spikes)
+    x1 = x_regions[i][0]
+    x2 = x_regions[i][1]
+
+    #%% First, waveforms
+    plt.figure()
+    curr_spikes = np.array(json_data['spikes'][i][0])
+    curr_spikes = curr_spikes[~np.isnan(curr_spikes).any(axis=1)] # removing any rows with nans in them
+    WINDOW_SIZE = np.shape(curr_spikes)[1]
+    numel_spikes = len(curr_spikes)
 #    plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.winter(np.linspace(0, 1, numel_spikes))))
 #
 #    for j in range(numel_spikes): # numel spikes
@@ -132,37 +134,37 @@ for i in range(len(json_data['spikes'])):
 #        plt.close()
 #
 #
-#    #%% Finally, entire x_region
-#    plt.figure()
-#    curr_filt = filtered_data[x1:x2]
-#    plt.plot(curr_filt, color="black")
-#
-#    offset = np.max(curr_filt) * 1.1
-#    plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.winter(np.linspace(0, 1, numel_spikes))))
-#    for j in range(len(timestamps[i])):
-#        plt.plot(timestamps[i][j], offset, "*") # plt.plot(timestamps[i], [5000 for k in range(31)], "*")
-#    pretty_up(0.050)
-#    savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGregion-'+str(i+1)
+    #%% Finally, entire x_region
+    plt.figure()
+    curr_filt = filtered_data[x1:x2]
+    plt.plot(curr_filt, color="black")
+
+    offset = np.max(curr_filt) * 1.1
+    plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.winter(np.linspace(0, 1, numel_spikes))))
+    for j in range(len(timestamps[i])):
+        plt.plot(timestamps[i][j], offset, "*") # plt.plot(timestamps[i], [5000 for k in range(31)], "*")
+    pretty_up(0.050)
+    savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGregion-'+str(i+1)
 #    plt.savefig((savepath + '.png'))
 #    plt.close()
 
     #%% histogram
     # make negative, relative to occurance.
-    ms = lambda int_or_array : int_or_array/sr * 1000
-
-    ts = np.sort(np.array(list(set(timestamps[i]))))
-    diff = np.diff(ts)
-    diff = ms(diff)
-    plt.hist(diff, bins = np.arange((max(diff) + 10), step=5), color = "black")
-    plt.gca().spines['right'].set_visible(False) # remove frame...
-    plt.gca().spines['top'].set_visible(False) # remove frame...
-    maxy = int(plt.gca().get_ybound()[1]) # yields tuple of lower and higher, gets second value, higher
-    # fixing the y axis
-    tick_range = np.arange(0, maxy+1)
-    tick_labels = np.arange(0, maxy+1)
-    tick_labels = tick_labels.astype(int)
-    plt.yticks(tick_range, tick_labels)
-
-    savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGhisto' + str(i + 1)
-    plt.savefig((savepath + '.png'))
-    plt.close()
+#    ms = lambda int_or_array : int_or_array/sr * 1000
+#
+#    ts = np.sort(np.array(list(set(timestamps[i]))))
+#    diff = np.diff(ts)
+#    diff = ms(diff)
+#    plt.hist(diff, bins = np.arange((max(diff) + 10), step=5), color = "black")
+#    plt.gca().spines['right'].set_visible(False) # remove frame...
+#    plt.gca().spines['top'].set_visible(False) # remove frame...
+#    maxy = int(plt.gca().get_ybound()[1]) # yields tuple of lower and higher, gets second value, higher
+#    # fixing the y axis
+#    tick_range = np.arange(0, maxy+1)
+#    tick_labels = np.arange(0, maxy+1)
+#    tick_labels = tick_labels.astype(int)
+#    plt.yticks(tick_range, tick_labels)
+#
+#    savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGhisto' + str(i + 1)
+#    plt.savefig((savepath + '.png'))
+#    plt.close()

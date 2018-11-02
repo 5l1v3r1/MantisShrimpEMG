@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style='darkgrid')
 
-xlfile = pd.ExcelFile(r"C:\Users\Dell\Documents\BYB\dataannotations.xlsx")
+xlfile = pd.ExcelFile(r"C:\Users\danpo\Dropbox\BYB\data\dataannotations.xlsx")
 dfs = pd.read_excel(xlfile, sheet_name="Sheet1")
 # note: dfs.loc[dfs['notes']=='underwater', ['title']]
 # returns df containing only rows of the title column for which the notes column reads
@@ -17,6 +17,7 @@ categories = ['cockroach', 'Mantis Shrimp', 'cricket']
  # returns list([['asdf', ' Mantis Shrimp'],['asdf', 'Mantis Shrimp'],['asdf', 'Mantis Shrimp']])
 def run_analysis_df(organism='cockroach'):
     # init lists for analysis
+    all_ts = []
     histo_data = []
     numspikes = []
     cocontraction_durations = []
@@ -28,6 +29,7 @@ def run_analysis_df(organism='cockroach'):
 #    print(files)
     for metainfo in files:
         path = metainfo[0][:-1 * len('.wav')] + '-analysis.json'
+        path = 'D:\\WindowsPartitionDell\\Documents\\BYB\\' + path.split('\\')[-1]
         # casting as string bc sometimes it is interpreted as an int.
         trials = str(metainfo[1]).split() # returns list of POSITIONS of relevant trials. decrement for index
         jsondata = json.load(open(path, 'r'))
@@ -36,8 +38,9 @@ def run_analysis_df(organism='cockroach'):
         for indexstr in trials:
             index= int(indexstr)-1
             # for big ass ISI histogram
-            ts = ms(np.sort(np.array(list(set(jsondata['timestamps'][index])))))
-            diff = np.diff(ts)
+            ts = np.sort(np.array(list(set(jsondata['timestamps'][index]))))
+            all_ts.append((ts, metainfo[0]))
+            diff = np.diff(ms(ts))
             histo_data = np.append(histo_data, diff)
 ##            ###******************************************* For making nice black histos
 #            plt.hist(diff, bins = np.arange((max(diff) + 10), step=5), color = "grey")
@@ -67,14 +70,14 @@ def run_analysis_df(organism='cockroach'):
             if organism == 'Mantis Shrimp':
                 gap_phase_duration = np.append(gap_phase_duration, ms(jsondata['onset'][index]) - ts[-1])
 
-    return (histo_data, numspikes, cocontraction_durations, gap_phase_duration, initial_hundred, final_hundred)
+    return (histo_data, numspikes, cocontraction_durations, gap_phase_duration, initial_hundred, final_hundred, all_ts)
 ns_cc_df = pd.DataFrame()
 hd_df = pd.DataFrame()
 gpd_df = pd.DataFrame()
 if_df = pd.DataFrame() # initial/final df
 
 # setting up dataframes for analysis
-(hd, ns, cc, gpd, ih, fh) = run_analysis_df('Mantis Shrimp')
+(hd, ns, cc, gpd, ih, fh, mants_ts) = run_analysis_df('Mantis Shrimp')
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'gpd':gpd})])
@@ -83,7 +86,7 @@ if_df = pd.concat([if_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'period': '
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'period': 'second half',
                                         'numsp':fh, 'ind':list(range(len(ih)))})])
 
-(hd, ns, cc, gpd, ih, fh) = run_analysis_df('cricket')
+(hd, ns, cc, gpd, ih, fh, cricket_ts) = run_analysis_df('cricket')
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'cricket', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'cricket', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'cricket', 'gpd':gpd})])
@@ -92,7 +95,7 @@ if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cricket', 'period': 'first 
 if_df = pd.concat([if_df, pd.DataFrame({'organism': 'cricket', 'period': 'second half',
                                         'numsp':fh, 'ind':list(range(len(ih)))})])
 
-(hd, ns, cc, gpd, ih, fh) = run_analysis_df('cockroach')
+(hd, ns, cc, gpd, ih, fh, cockroach_ts) = run_analysis_df('cockroach')
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'cockroach', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'cockroach', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'cockroach', 'gpd':gpd})])
@@ -164,7 +167,7 @@ def pretty_up(axis, title='', y_axis = ''):
 #    savepath = "C:\\Users\\Dell\\Documents\\BYB\\sum_histo_" + org + ".png"
 #    plt.savefig(savepath)
 
-
+#%% Patek comparison
 #interspec = pd.DataFrame({'species': 'Mantis Shrimp', 'cc':cc,'ns':ns,})
 
 asl = lambda a, s: [a-s, a, a+s]
@@ -226,6 +229,3 @@ ax24.set(title='Number of spikes')
 ax6 = sns.catplot(x='period', y='numsp', hue='ind', kind='point',
                   col='organism', capsize=0.1, data=if_df)
 pretty_up(ax6, title='', y_axis='Number of spikes')
-
-
-
