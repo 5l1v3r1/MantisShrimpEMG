@@ -15,6 +15,7 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 #%%
 #(mantis shrimp data from 11.38.47, cricket from 13.38.41, cockroach from 17.03.52)
+
 #%% Housekeeping
 #%matplotlib qt
 plt.clf() # clear current fig
@@ -76,6 +77,7 @@ def pretty_up(interval=0.001):
 # i.e., number of x_regions
 for i in range(len(json_data['spikes'])):
 #
+
     x1 = x_regions[i][0]
     x2 = x_regions[i][1]
 
@@ -85,6 +87,7 @@ for i in range(len(json_data['spikes'])):
     curr_spikes = curr_spikes[~np.isnan(curr_spikes).any(axis=1)] # removing any rows with nans in them
     WINDOW_SIZE = np.shape(curr_spikes)[1]
     numel_spikes = len(curr_spikes)
+
 #    plt.gca().set_prop_cycle(plt.cycler('color', plt.cm.winter(np.linspace(0, 1, numel_spikes))))
 #
 #    for j in range(numel_spikes): # numel spikes
@@ -145,11 +148,13 @@ for i in range(len(json_data['spikes'])):
         plt.plot(timestamps[i][j], offset, "*") # plt.plot(timestamps[i], [5000 for k in range(31)], "*")
     pretty_up(0.050)
     savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGregion-'+str(i+1)
+
 #    plt.savefig((savepath + '.png'))
 #    plt.close()
 
     #%% histogram
     # make negative, relative to occurance.
+
 #    ms = lambda int_or_array : int_or_array/sr * 1000
 #
 #    ts = np.sort(np.array(list(set(timestamps[i]))))
@@ -168,3 +173,4 @@ for i in range(len(json_data['spikes'])):
 #    savepath = analysis_path[:-1*len('.json')]+'-PUBLISHEDEMGhisto' + str(i + 1)
 #    plt.savefig((savepath + '.png'))
 #    plt.close()
+

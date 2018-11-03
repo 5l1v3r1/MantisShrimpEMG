@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style='darkgrid')
 
-xlfile = pd.ExcelFile(r"C:\Users\danpo\Dropbox\BYB\data\dataannotations.xlsx")
 
+xlfile = pd.ExcelFile(r"E:\BYB\dataannotations.xlsx")
 dfs = pd.read_excel(xlfile, sheet_name="Sheet1")
 # note: dfs.loc[dfs['notes']=='underwater', ['title']]
 # returns df containing only rows of the title column for which the notes column reads
@@ -18,7 +18,9 @@ categories = ['cockroach', 'Mantis Shrimp', 'cricket']
  # returns list([['asdf', ' Mantis Shrimp'],['asdf', 'Mantis Shrimp'],['asdf', 'Mantis Shrimp']])
 def run_analysis_df(organism='cockroach'):
     # init lists for analysis
+
     all_ts = []
+
     histo_data = []
     numspikes = []
     cocontraction_durations = []
@@ -32,8 +34,8 @@ def run_analysis_df(organism='cockroach'):
         # need to chop and screw this piece so it reads the right piece
 
         path = metainfo[0][:-1 * len('.wav')] + '-analysis.json'
+        path = 'E:\\BYB\\' + path.split('\\')[-1]
 
-        path = 'D:\\WindowsPartitionDell\\Documents\\BYB\\' + path.split('\\')[-1]
         # casting as string bc sometimes it is interpreted as an int.
         trials = str(metainfo[1]).split() # returns list of POSITIONS of relevant trials. decrement for index
         jsondata = json.load(open(path, 'r'))
@@ -74,14 +76,18 @@ def run_analysis_df(organism='cockroach'):
             if organism == 'Mantis Shrimp':
                 gap_phase_duration = np.append(gap_phase_duration, ms(jsondata['onset'][index]) - ts[-1])
 
+
     return (histo_data, numspikes, cocontraction_durations, gap_phase_duration, initial_hundred, final_hundred, all_ts)
+
 ns_cc_df = pd.DataFrame()
 hd_df = pd.DataFrame()
 gpd_df = pd.DataFrame()
 if_df = pd.DataFrame() # initial/final df
 
 # setting up dataframes for analysis
+
 (hd, ns, cc, gpd, ih, fh, mants_ts) = run_analysis_df('Mantis Shrimp')
+
 ns_cc_df = pd.concat([ns_cc_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'cc':cc,'ns':ns,})])
 hd_df = pd.concat([hd_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'hd':hd})])
 gpd_df = pd.concat([gpd_df, pd.DataFrame({'organism': 'Mantis Shrimp', 'gpd':gpd})])
@@ -245,3 +251,4 @@ ax24.set(title='Number of spikes')
 ax6 = sns.catplot(x='period', y='numsp', hue='ind',
                   kind='point', col='organism', capsize=0.1, data=if_df, legend=False)
 #pretty_up(ax6, title='', y_axis='Number of spikes')
+
